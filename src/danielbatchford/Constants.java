@@ -11,10 +11,8 @@ public interface Constants {
     int TEXT_SPACING = 25;
     int FONT_SIZE = 15;
 
-    int NUMBER_OF_NODES = 5;
-
+    int NUMBER_OF_NODES = 30;
     int NODE_DRAW_RADIUS = 20;
 
-    int UPDATE_INTERVAL = 10;
     int FRAME_RATE = 60;
 }

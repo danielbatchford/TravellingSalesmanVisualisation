@@ -28,7 +28,9 @@ public class Node implements Constants {
         return pos;
     }
 
-    public int getId(){return id;};
+    public int getId() {
+        return id;
+    }
 
     @Override
     public String toString() {

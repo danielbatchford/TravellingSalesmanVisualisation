@@ -21,8 +21,8 @@ public class Edge {
     double getDistance() {
         int[] pos1 = n1.getPos();
         int[] pos2 = n2.getPos();
-        return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
 
+return Math.hypot(Math.abs(pos1[0]-pos2[0]),Math.abs(pos1[1]-pos2[1]));
     }
 
     @Override

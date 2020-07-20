@@ -5,64 +5,70 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class NodeMap {
+public class NodeMap implements LEARNING_PARAMETERS {
 
     private final int numberOfNodes;
-    private final List<Node> nodes;
-    private ArrayList edges;
+    private List<Node> nodes;
+    private ArrayList<Edge> edges;
+
     private Random random;
-    private double alpha;
-    private double temperature;
+
+    public double temperature;
+    private double oldCost;
 
     public NodeMap(int numberOfNodes) {
-        this.numberOfNodes = numberOfNodes;
-        nodes = new ArrayList<>();
-        random = new Random();
 
+        this.numberOfNodes = numberOfNodes;
+
+        nodes = new ArrayList<>();
         for (int i = 0; i < numberOfNodes; i++) {
             nodes.add(new Node(i));
         }
-        edges = new ArrayList<>();
 
+        edges = new ArrayList<>();
         for (int i = 0; i < numberOfNodes - 1; i++) {
             edges.add(new Edge(nodes.get(i), nodes.get(i + 1)));
         }
+        edges.add(new Edge(nodes.get(numberOfNodes - 1), nodes.get(0)));
 
-        alpha = 0.99;
-        temperature = 1000;
+        random = new Random();
+        temperature = INITIAL_TEMPERATURE;
+        oldCost = getCost(edges);
     }
 
     public void update() {
-        int firstIndex = random.nextInt(numberOfNodes - 1);
-        int secondIndex = firstIndex + 1;
 
+        boolean swapped = false;
+        int currentAttempt = 0;
 
-        List<Node> newNodeList = new ArrayList<>(nodes);
-        System.out.println(newNodeList);
-        Collections.swap(newNodeList, firstIndex, secondIndex);
-        System.out.println(newNodeList);
+        while(!swapped && currentAttempt < MAX_ATTEMPTS) {
 
+            int firstIndex = random.nextInt(numberOfNodes);
+            int secondIndex = random.nextInt(numberOfNodes);
+            List<Node> newNodes = new ArrayList<>(nodes);
+            Collections.swap(newNodes, firstIndex, secondIndex);
 
-        List<Edge> newEdgeList = new ArrayList<>();
-        for (int i = 0; i < numberOfNodes - 1; i++) {
-            newEdgeList.add(new Edge(newNodeList.get(i), newNodeList.get(i + 1)));
+            ArrayList<Edge> newEdges = new ArrayList<>(edges);
+            for (int i = Math.max(firstIndex-1,0), max = Math.min(firstIndex+1,numberOfNodes-2); i <= max; i++) {
+                newEdges.set(i,new Edge(newNodes.get(i), newNodes.get(i + 1)));
+            }
+            for (int i = Math.max(secondIndex-1,0), max = Math.min(secondIndex+1,numberOfNodes-2); i <= max; i++) {
+                newEdges.set(i,new Edge(newNodes.get(i), newNodes.get(i + 1)));
+            }
+
+            newEdges.set(numberOfNodes-1,new Edge(newNodes.get(numberOfNodes - 1), newNodes.get(0)));
+
+            double newCost = getCost(newEdges);
+
+            if (newCost < oldCost || random.nextDouble() < Math.exp((oldCost - newCost) / temperature)) {
+                swapped = true;
+                oldCost = newCost;
+                nodes = newNodes;
+                edges = newEdges;
+            }
+            currentAttempt++;
+            temperature *= ALPHA;
         }
-        System.out.println(edges);
-
-        double oldCost = getCost(edges);
-        double newCost = getCost(newEdgeList);
-
-        System.out.println(oldCost);
-        System.out.println(newCost);
-        System.out.println();
-
-        if (newCost < oldCost) {
-            edges = new ArrayList<Edge>(newEdgeList);
-        } else if (random.nextDouble() < Math.exp((oldCost - newCost) / temperature) && false) {
-            edges = new ArrayList<Edge>(newEdgeList);
-        }
-
-        temperature *= alpha;
     }
 
 
@@ -71,7 +77,7 @@ public class NodeMap {
         for (Edge edge : edges) {
             sum += edge.getDistance();
         }
-        return sum/numberOfNodes;
+        return sum / numberOfNodes;
     }
 
     public double getCost() {
@@ -90,17 +96,14 @@ public class NodeMap {
         StringBuilder sb = new StringBuilder();
 
         for (Edge edge : edges) {
-            sb.append(edge.toString() + "\n");
+            sb.append(edge.toString()).append("\n");
         }
         sb.append("\n");
         return sb.toString();
     }
 
-    public double getTemperature() {
-        return temperature;
+    public double getLearningRate(){
+        return ALPHA;
     }
 
-    public double getLearningRate() {
-        return alpha;
-    }
 }
