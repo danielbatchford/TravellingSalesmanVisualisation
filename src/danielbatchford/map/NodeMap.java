@@ -1,18 +1,20 @@
-package danielbatchford.nodecontrol;
+package danielbatchford.map;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class GraphController {
+public class NodeMap {
 
     private final int numberOfNodes;
     private final List<Node> nodes;
-    private List<Edge> edges;
+    private ArrayList edges;
     private Random random;
+    private double alpha;
+    private double temperature;
 
-    public GraphController(int numberOfNodes) {
+    public NodeMap(int numberOfNodes) {
         this.numberOfNodes = numberOfNodes;
         nodes = new ArrayList<>();
         random = new Random();
@@ -26,34 +28,41 @@ public class GraphController {
             edges.add(new Edge(nodes.get(i), nodes.get(i + 1)));
         }
 
+        alpha = 0.99;
+        temperature = 1000;
     }
 
     public void update() {
-        int startIndex = random.nextInt(nodes.size());
-        int endIndex = random.nextInt(nodes.size() - startIndex) + startIndex;
+        int firstIndex = random.nextInt(numberOfNodes - 1);
+        int secondIndex = firstIndex + 1;
+
 
         List<Node> newNodeList = new ArrayList<>(nodes);
-        List<Node> subList = nodes.subList(startIndex, endIndex);
-        Collections.reverse(subList);
+        System.out.println(newNodeList);
+        Collections.swap(newNodeList, firstIndex, secondIndex);
+        System.out.println(newNodeList);
 
-        for(int i = startIndex; i < endIndex; i++){
-            newNodeList.set(i,subList.get(i-startIndex));
-        }
 
         List<Edge> newEdgeList = new ArrayList<>();
-
-        for (int i = 0; i < newEdgeList.size() - 1; i++) {
+        for (int i = 0; i < numberOfNodes - 1; i++) {
             newEdgeList.add(new Edge(newNodeList.get(i), newNodeList.get(i + 1)));
         }
+        System.out.println(edges);
 
-        if (getCost(newEdgeList) < getCost(edges)) {
-            edges = new ArrayList(newEdgeList);
-        }
+        double oldCost = getCost(edges);
+        double newCost = getCost(newEdgeList);
 
-        for (Node n : nodes) {
-            System.out.println(n.toString());
-        }
+        System.out.println(oldCost);
+        System.out.println(newCost);
         System.out.println();
+
+        if (newCost < oldCost) {
+            edges = new ArrayList<Edge>(newEdgeList);
+        } else if (random.nextDouble() < Math.exp((oldCost - newCost) / temperature) && false) {
+            edges = new ArrayList<Edge>(newEdgeList);
+        }
+
+        temperature *= alpha;
     }
 
 
@@ -62,7 +71,7 @@ public class GraphController {
         for (Edge edge : edges) {
             sum += edge.getDistance();
         }
-        return sum;
+        return sum/numberOfNodes;
     }
 
     public double getCost() {
@@ -85,5 +94,13 @@ public class GraphController {
         }
         sb.append("\n");
         return sb.toString();
+    }
+
+    public double getTemperature() {
+        return temperature;
+    }
+
+    public double getLearningRate() {
+        return alpha;
     }
 }

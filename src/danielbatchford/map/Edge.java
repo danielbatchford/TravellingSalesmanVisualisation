@@ -1,4 +1,4 @@
-package danielbatchford.nodecontrol;
+package danielbatchford.map;
 
 public class Edge {
 
@@ -22,6 +22,7 @@ public class Edge {
         int[] pos1 = n1.getPos();
         int[] pos2 = n2.getPos();
         return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+
     }
 
     @Override
