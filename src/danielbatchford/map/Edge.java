@@ -1,7 +1,8 @@
 package danielbatchford.map;
 
-public class Edge {
+public class Edge implements MapEdge{
 
+    // The start and end nodes on the edge. (Order not important)
     private Node n1;
     private Node n2;
 
@@ -18,16 +19,12 @@ public class Edge {
         return n2;
     }
 
-    double getDistance() {
+    // Returns the Euclidean distance between both nodes. (Represented in pixels).
+    public double getDistance() {
         int[] pos1 = n1.getPos();
         int[] pos2 = n2.getPos();
 
-return Math.hypot(Math.abs(pos1[0]-pos2[0]),Math.abs(pos1[1]-pos2[1]));
-    }
-
-    @Override
-    public String toString() {
-        return n1.toString() + " " + n2.toString();
+        return Math.hypot(Math.abs(pos1[0] - pos2[0]), Math.abs(pos1[1] - pos2[1]));
     }
 
 }

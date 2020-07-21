@@ -5,79 +5,94 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class NodeMap implements LEARNING_PARAMETERS {
+public class NodeMap implements MapController, LearningParameters {
 
-    private final int numberOfNodes;
+    // Represents the number of nodes
+    private final int n;
+
     private List<Node> nodes;
     private ArrayList<Edge> edges;
 
     private Random random;
 
     public double temperature;
-    private double oldCost;
 
-    public NodeMap(int numberOfNodes) {
+    // Holds the current calculated cost of the graph
+    private double currCost;
 
-        this.numberOfNodes = numberOfNodes;
+    public NodeMap(int n) {
 
+        this.n = n;
+
+        // Initialise n nodes
         nodes = new ArrayList<>();
-        for (int i = 0; i < numberOfNodes; i++) {
+        for (int i = 0; i < n; i++) {
             nodes.add(new Node(i));
         }
 
+        // Initialise edges
         edges = new ArrayList<>();
-        for (int i = 0; i < numberOfNodes - 1; i++) {
-            edges.add(new Edge(nodes.get(i), nodes.get(i + 1)));
+        for (int i = 0; i < n - 1; i++) {
+            edges.add(new Edge(nodes.get(i), nodes.get((i + 1) % n)));
         }
-        edges.add(new Edge(nodes.get(numberOfNodes - 1), nodes.get(0)));
+
 
         random = new Random();
         temperature = INITIAL_TEMPERATURE;
-        oldCost = getCost(edges);
+        currCost = getCost(edges);
     }
 
+    /* Simulate one search and update of the graph. 2 indexes are chosen and the sublist between these indexes is reversed.
+    If the cost decreases, update the graph. Else with probability controlled by simulated annealing, update the graph
+    anyway. Else, continue searching.*/
     public void update() {
 
+        // The index of the first chosen node.
+        int sIndex = 0;
+
+        // Whether a successful swap has been chosen.
         boolean swapped = false;
-        int currentAttempt = 0;
 
-        while(!swapped && currentAttempt < MAX_ATTEMPTS) {
+        while (!swapped) {
 
-            int firstIndex = random.nextInt(numberOfNodes);
-            int secondIndex = random.nextInt(numberOfNodes);
+            // End index from range [sIndex, n)
+            int eIndex = random.nextInt(n - sIndex) + sIndex;
+
+            // Copy the current nodes and reverse the sublist between the start and end indexes.
             List<Node> newNodes = new ArrayList<>(nodes);
-            Collections.swap(newNodes, firstIndex, secondIndex);
+            Collections.reverse(newNodes.subList(sIndex, eIndex));
 
-            ArrayList<Edge> newEdges = new ArrayList<>(edges);
-            for (int i = Math.max(firstIndex-1,0), max = Math.min(firstIndex+1,numberOfNodes-2); i <= max; i++) {
-                newEdges.set(i,new Edge(newNodes.get(i), newNodes.get(i + 1)));
-            }
-            for (int i = Math.max(secondIndex-1,0), max = Math.min(secondIndex+1,numberOfNodes-2); i <= max; i++) {
-                newEdges.set(i,new Edge(newNodes.get(i), newNodes.get(i + 1)));
+            // Populate a copy of the edge list with the new changes
+            ArrayList<Edge> newEdges = new ArrayList<>();
+            for (int i = 0; i < n; i++) {
+                newEdges.add(new Edge(newNodes.get(i), newNodes.get((i + 1) % n)));
             }
 
-            newEdges.set(numberOfNodes-1,new Edge(newNodes.get(numberOfNodes - 1), newNodes.get(0)));
-
+            // Calculate a cost for this current permutation
             double newCost = getCost(newEdges);
 
-            if (newCost < oldCost || random.nextDouble() < Math.exp((oldCost - newCost) / temperature)) {
-                swapped = true;
-                oldCost = newCost;
+            // If cost decreases or with probability p = e^(deltaCost/temperature), update the graph with the changes.
+            if (newCost < currCost || random.nextDouble() < Math.exp((currCost - newCost) / temperature)) {
+                currCost = newCost;
                 nodes = newNodes;
                 edges = newEdges;
+                temperature *= ALPHA;
+                swapped = true;
             }
-            currentAttempt++;
-            temperature *= ALPHA;
+
+            // Otherwise, iterate the start index and continue searching
+            sIndex++;
         }
     }
 
 
+    // Currently returns the average distance between nodes.
     private double getCost(List<Edge> edges) {
         double sum = 0;
         for (Edge edge : edges) {
             sum += edge.getDistance();
         }
-        return sum / numberOfNodes;
+        return sum / n;
     }
 
     public double getCost() {
@@ -92,17 +107,7 @@ public class NodeMap implements LEARNING_PARAMETERS {
         return edges;
     }
 
-    public String edgesToString(List<Edge> edges) {
-        StringBuilder sb = new StringBuilder();
-
-        for (Edge edge : edges) {
-            sb.append(edge.toString()).append("\n");
-        }
-        sb.append("\n");
-        return sb.toString();
-    }
-
-    public double getLearningRate(){
+    public double getLearningRate() {
         return ALPHA;
     }
 

@@ -7,6 +7,7 @@ import processing.core.PApplet;
 import java.util.LinkedList;
 import java.util.List;
 
+// Plots and renders graph on the PApplet
 public class Plot implements Constants {
 
     PApplet parent;

@@ -5,6 +5,7 @@ import processing.core.PApplet;
 
 import java.text.DecimalFormat;
 
+// Handles and updates info box placed on screen
 public class InfoBox implements Constants {
 
     private DecimalFormat decimalFormat;
@@ -26,7 +27,7 @@ public class InfoBox implements Constants {
         parent.fill(0, 0, 0);
         parent.text("Avg Distance: " + decimalFormat.format(currCost), TEXT_POS[0], TEXT_POS[1]);
         parent.text("Temperature: " + decimalFormat.format(temperature), TEXT_POS[0], TEXT_POS[1] + TEXT_SPACING);
-        parent.text("Learning Rate: " + learningRate, TEXT_POS[0], TEXT_POS[1] + 2 * TEXT_SPACING);
+        parent.text("Alpha: " + learningRate, TEXT_POS[0], TEXT_POS[1] + 2 * TEXT_SPACING);
         parent.text("Pause with \"P\"", TEXT_POS[0], TEXT_POS[1] + 3 * TEXT_SPACING);
         parent.text("Reset with \"R\"", TEXT_POS[0], TEXT_POS[1] + 4 * TEXT_SPACING);
     }
