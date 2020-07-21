@@ -13,3 +13,10 @@ Learning rates changed in `src/danielbatchford/map/LEARNING_PARAMETERS`
 ## Credits
 - processing
 - gicentre
+
+
+## Todo
+- optimise parameters
+- animations
+- prevent node spawning in box or near other node
+- Priority randomisation weighting

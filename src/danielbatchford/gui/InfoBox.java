@@ -1,5 +1,6 @@
-package danielbatchford;
+package danielbatchford.gui;
 
+import danielbatchford.Constants;
 import processing.core.PApplet;
 
 import java.text.DecimalFormat;

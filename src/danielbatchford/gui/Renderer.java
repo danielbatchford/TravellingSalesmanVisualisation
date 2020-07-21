@@ -1,5 +1,6 @@
-package danielbatchford;
+package danielbatchford.gui;
 
+import danielbatchford.Constants;
 import danielbatchford.map.Edge;
 import danielbatchford.map.Node;
 import danielbatchford.map.NodeMap;
@@ -17,7 +18,7 @@ public class Renderer extends PApplet implements Constants {
     private int framesSinceReset;
 
     public static void main(String[] args) {
-        PApplet.main("danielbatchford.Renderer");
+        PApplet.main("danielbatchford.gui.Renderer");
     }
 
     @Override
@@ -42,35 +43,37 @@ public class Renderer extends PApplet implements Constants {
     @Override
     public void draw() {
 
-        background(color(255, 255, 255));
-        stroke(0, 0, 0);
+            background(color(255, 255, 255));
+            stroke(0, 0, 0);
 
-        List<Edge> edges = nodeMap.getEdges();
+            List<Edge> edges = nodeMap.getEdges();
 
-        for (Edge edge : edges) {
-            int[] pos1 = edge.getN1().getPos();
-            int[] pos2 = edge.getN2().getPos();
+            for (Edge edge : edges) {
+                int[] pos1 = edge.getN1().getPos();
+                int[] pos2 = edge.getN2().getPos();
 
-            line(pos1[0], pos1[1], pos2[0], pos2[1]);
-        }
+                line(pos1[0], pos1[1], pos2[0], pos2[1]);
+            }
 
-        noStroke();
-        fill(0, 0, 0);
-        List<Node> nodes = nodeMap.getNodes();
-        for (Node node : nodes) {
-            int[] pos = node.getPos();
-            circle(pos[0], pos[1], NODE_DRAW_RADIUS);
-            text(node.getId(), pos[0], pos[1] - 10);
-        }
+            noStroke();
+            fill(0, 0, 0);
+            List<Node> nodes = nodeMap.getNodes();
+            for (Node node : nodes) {
+                int[] pos = node.getPos();
+                circle(pos[0], pos[1], NODE_DRAW_RADIUS);
+                text(node.getId(), pos[0], pos[1] - 10);
+            }
 
-        double currCost = nodeMap.getCost();
+            double currCost = nodeMap.getCost();
 
-        infoBox.draw(currCost, nodeMap.temperature);
-        plot.append(framesSinceReset, (float) currCost);
-        plot.draw();
-        framesSinceReset++;
-        nodeMap.update();
+            infoBox.draw(currCost, nodeMap.temperature);
+            plot.append(framesSinceReset, (float) currCost);
+            plot.draw();
+            framesSinceReset++;
+            nodeMap.update();
+
     }
+
 
 
 

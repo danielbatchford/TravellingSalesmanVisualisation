@@ -1,5 +1,6 @@
-package danielbatchford;
+package danielbatchford.gui;
 
+import danielbatchford.Constants;
 import org.gicentre.utils.stat.XYChart;
 import processing.core.PApplet;
 
