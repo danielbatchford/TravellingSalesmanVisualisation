@@ -8,12 +8,13 @@ short paths in a map of nodes and edges. Updates are made every frame and displa
 
 #### Logic
 At each step, 2 indexes are chosen - the first is iterated from 0 and the second is a random index in the node
-list where secondIndex > firstIndex. A sublist of nodes is chosen [firstIndex, secondIndex] and this sublist is reversed.
+list where secondIndex > firstIndex. A sublist of nodes is chosen \[firstIndex, secondIndex) and this sublist is reversed.
 If the cost of this new permutation is lower than the current cost, a swap is made. Else, with a probability
  P = e^((newCost-currentCost)/temperature), the swap is made. If a swap is made, the temperature is updated using temperature*=alpha.
  Otherwise, the first index is incremented and the second index is again chosen at random, until a swap is made.
  
 Learning rates can be changed in `src/danielbatchford/map/LearningParameters`.
+
 #### Cost Function
 Currently, the cost is calculated as the average distance (in pixels) of all connected edges.
 
